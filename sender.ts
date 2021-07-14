@@ -14,11 +14,11 @@ amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
     const updatePost = `${url}/posts/${postId}`; // sama dengan getPostsById
 
     // API DELETE https://jsonplaceholder.typicode.com TIDAK JALAN
-    const idDelete = "2";
-    const ex = "postsById";
+    const idDelete = "4";
+
     conn.createChannel((err, ch) => {
       // ch.publish("getPosts", "", Buffer.from(getPosts));
-      // ch.publish("getPostsById", "", Buffer.from(getPostsById));
+      // ch.publish("getPostsById", "", Buffer.from(getPostsById)); // CUMA GET DARI API
       // ch.publish("getCommentsByPostId", "", Buffer.from(getCommentsByPostId));
       // ch.publish("createPost", "", Buffer.from(createPost));
       // ch.publish("updatePost", "", Buffer.from(updatePost));

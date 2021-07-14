@@ -32,16 +32,13 @@ amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
         const url = msg.content.toString();
         if (msg.fields.exchange === "getPosts") {
           const posts = await getPosts(url);
-          // console.log(posts);
           for (let i = 0; i < posts.length; i++) {
             const data = {
               userId: posts[i].userId,
               title: posts[i].title,
               body: posts[i].body,
             };
-            await model.posts.create(data).then((result) => {
-              console.log(`Data id ${result.dataValues.id} Berhasil disimpan`);
-            });
+            await model.posts.create(data);
           }
         } else if (msg.fields.exchange === "getPostsById") {
           const postsById = await getPostsById(url);
@@ -55,11 +52,7 @@ amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
               email: comments[i].email,
               body: comments[i].body,
             };
-            await model.comments.create(data).then((result) => {
-              console.log(
-                `Comment id ${result.dataValues.id} Berhasil disimpan`
-              );
-            });
+            await model.comments.create(data);
           }
         } else if (msg.fields.exchange === "createPost") {
           const data = {
@@ -68,9 +61,7 @@ amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
             body: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum nostrum odio nobis consequuntur dolorum repellendus nihil quam a illum reiciendis",
           };
           await createPost(url, data);
-          await model.posts.create(data).then((result) => {
-            console.log(`Data id ${result.dataValues.id} Berhasil disimpan`);
-          });
+          await model.posts.create(data);
         } else if (msg.fields.exchange === "updatePost") {
           const data = {
             userId: 1,
@@ -80,24 +71,21 @@ amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
           const update = await updatePost(url, data);
           console.log(update);
 
-          await model.posts
-            .update(data, {
-              where: { id: update.userId },
-            })
-            .then((result) => {
-              console.log(`Data id ${result.dataValues.id} Berhasil Diupdate`);
-            });
+          await model.posts.update(data, {
+            where: { id: update.userId },
+          });
         } else if (msg.fields.exchange === "deletePost") {
-          await model.posts
-            .destroy({ where: { id: url } })
-            .then((result) => {
-              console.log(`Data id ${result.dataValues.id} Berhasil Dihapus`);
-            })
-            .catch((error) => {
-              if (error.message === "Cannot read property 'id' of undefined") {
-                console.log(`Id ${url} tidak ditemukan`);
-              }
-            });
+          try {
+            await model.posts.destroy({ where: { id: url } });
+          } catch (error) {
+            console.log(error);
+          }
+
+          // .catch((error) => {
+          //   if (error.message === "Cannot read property 'id' of undefined") {
+          //     console.log(`Id ${url} tidak ditemukan`);
+          //   }
+          // });
         }
       });
     });
