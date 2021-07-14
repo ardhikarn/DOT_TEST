@@ -1,0 +1,3 @@
+RabbitMQ adalah salah satu dari Message Broker, yang intinya berfungsi sebagai Middleware atau lebih mudahnya untuk menghubungkan antara penulis pesan (program yang mengirimkan pesan) dengan penerima pesan (program yang menerima pesan).
+
+ORM (Object Relational Maping) bisa dibilang teknik untuk mengeksekusi database menjadi objek tanpa menggunakan kueri
