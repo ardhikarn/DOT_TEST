@@ -10,20 +10,23 @@ amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
     const getPosts = `${url}/posts`;
     const getPostsById = `${url}/posts/${postId}`;
     const getCommentsByPostId = `${url}/posts/${postId}/comments`;
-    // const createPost = `${url}/posts`; // api url sama dengan getPosts
-    const updatePost = `${url}/posts/${postId}`;
+    const createPost = `${url}/posts`; // api url sama dengan getPosts
+    const updatePost = `${url}/posts/${postId}`; // sama dengan getPostsById
+
+    // API DELETE https://jsonplaceholder.typicode.com TIDAK JALAN
+    const idDelete = "2";
     const ex = "postsById";
     conn.createChannel((err, ch) => {
       // ch.publish("getPosts", "", Buffer.from(getPosts));
       // ch.publish("getPostsById", "", Buffer.from(getPostsById));
       // ch.publish("getCommentsByPostId", "", Buffer.from(getCommentsByPostId));
-      // ch.publish("createPost", "", Buffer.from(getPosts));
-      ch.publish("updatePost", "", Buffer.from(updatePost));
-      // ch.publish('getPosts', "", Buffer.from(getPosts));
+      // ch.publish("createPost", "", Buffer.from(createPost));
+      // ch.publish("updatePost", "", Buffer.from(updatePost));
+      ch.publish("deletePost", "", Buffer.from(idDelete));
     });
     setTimeout(function () {
       conn.close();
       process.exit(0);
-    }, 10000);
+    }, 500);
   }
 });

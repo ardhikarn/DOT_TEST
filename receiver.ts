@@ -12,12 +12,12 @@ var connection = require("./config/database/mysql");
 
 amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
   conn.createChannel((err, ch) => {
-    // var ex = "posts";
-    // ch.assertExchange("getPosts", "fanout", { durable: false });
-    // ch.assertExchange("getPostsById", "fanout", { durable: false });
-    // ch.assertExchange("getCommentsByPostId", "fanout", { durable: false });
-    // ch.assertExchange("createPost", "fanout", { durable: false });
-    // ch.assertExchange("updatePost", "fanout", { durable: false });
+    ch.assertExchange("getPosts", "fanout", { durable: false });
+    ch.assertExchange("getPostsById", "fanout", { durable: false });
+    ch.assertExchange("getCommentsByPostId", "fanout", { durable: false });
+    ch.assertExchange("createPost", "fanout", { durable: false });
+    ch.assertExchange("updatePost", "fanout", { durable: false });
+    ch.assertExchange("deletePost", "fanout", { durable: false });
 
     ch.assertQueue("", { exclusive: true }, (err, q) => {
       console.log("Menunggu Pesan Antrian %s dari Pengirim", q.queue);
@@ -26,6 +26,7 @@ amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
       ch.bindQueue(q.queue, "getCommentsByPostId", "");
       ch.bindQueue(q.queue, "createPost", "");
       ch.bindQueue(q.queue, "updatePost", "");
+      ch.bindQueue(q.queue, "deletePost", "");
 
       ch.consume(q.queue, async (msg) => {
         const url = msg.content.toString();
@@ -87,14 +88,17 @@ amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
               console.log(`Data id ${result.dataValues.id} Berhasil Diupdate`);
             });
         } else if (msg.fields.exchange === "deletePost") {
-          console.log("masuk");
+          await model.posts
+            .destroy({ where: { id: url } })
+            .then((result) => {
+              console.log(`Data id ${result.dataValues.id} Berhasil Dihapus`);
+            })
+            .catch((error) => {
+              if (error.message === "Cannot read property 'id' of undefined") {
+                console.log(`Id ${url} tidak ditemukan`);
+              }
+            });
         }
-        // console.log(msg.fields.exchange);
-        // ch.ack(msg);
-        //   const post = await getPosts(url);
-        //   // const postById = await getPostsById(url)
-        //   console.log(post);
-        //   // console.log('ini ID 100', postById);
       });
     });
   });
