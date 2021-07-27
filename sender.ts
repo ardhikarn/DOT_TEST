@@ -17,16 +17,16 @@ amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
     const idDelete = "4";
 
     conn.createChannel((err, ch) => {
-      // ch.publish("getPosts", "", Buffer.from(getPosts));
+      ch.publish("getPosts", "", Buffer.from(getPosts));
       // ch.publish("getPostsById", "", Buffer.from(getPostsById)); // CUMA GET DARI API
       // ch.publish("getCommentsByPostId", "", Buffer.from(getCommentsByPostId));
       // ch.publish("createPost", "", Buffer.from(createPost));
       // ch.publish("updatePost", "", Buffer.from(updatePost));
-      ch.publish("deletePost", "", Buffer.from(idDelete));
+      // ch.publish("deletePost", "", Buffer.from(idDelete));
     });
     setTimeout(function () {
       conn.close();
       process.exit(0);
-    }, 500);
+    }, 10000);
   }
 });

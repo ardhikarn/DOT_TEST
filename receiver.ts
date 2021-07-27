@@ -29,6 +29,7 @@ amqp.connect("amqp://" + process.env.RABBITMQ_URL, (err, conn) => {
       ch.bindQueue(q.queue, "deletePost", "");
 
       ch.consume(q.queue, async (msg) => {
+        console.log(msg);
         const url = msg.content.toString();
         if (msg.fields.exchange === "getPosts") {
           const posts = await getPosts(url);
